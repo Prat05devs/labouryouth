@@ -1,0 +1,2 @@
+import {Stack} from 'expo-router';import {SessionProvider} from '../src/session';import {colors} from '../src/ui';
+export default function Layout(){return <SessionProvider><Stack screenOptions={{headerStyle:{backgroundColor:colors.paper},headerTintColor:colors.ink,headerTitle:'Labour Youth',headerShadowVisible:false}}><Stack.Screen name="index" options={{headerShown:false}}/><Stack.Screen name="(client)" options={{headerShown:false}}/><Stack.Screen name="(worker)" options={{headerShown:false}}/></Stack></SessionProvider>;}

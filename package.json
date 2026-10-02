@@ -1,0 +1,17 @@
+{
+  "name": "labour-youth",
+  "private": true,
+  "workspaces": [
+    "apps/mobile",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:mobile": "npm run start -w apps/mobile",
+    "dev:web": "npm run dev -w apps/web",
+    "build:web": "npm run build -w apps/web",
+    "typecheck": "npm run typecheck --workspaces"
+  },
+  "engines": {
+    "node": ">=24.3.0"
+  }
+}

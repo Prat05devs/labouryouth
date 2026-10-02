@@ -1,0 +1,3 @@
+import Link from 'next/link';
+export const dynamic='force-dynamic';
+export default function Download(){return <main className="auth"><Link href="/" className="brand">Labour Youth</Link><h1 style={{fontSize:42}}>Take the next step.</h1><p>Use the mobile app to hire staff or find work.</p><div className="form">{process.env.IOS_APP_URL&&<a className="button" href={process.env.IOS_APP_URL}>Open on iPhone</a>}{process.env.ANDROID_APP_URL&&<a className="button" href={process.env.ANDROID_APP_URL}>Open on Android</a>}{!process.env.IOS_APP_URL&&!process.env.ANDROID_APP_URL&&<p>App distribution is being prepared. Download links will appear here when the build is available.</p>}</div></main>;}

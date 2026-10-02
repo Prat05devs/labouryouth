@@ -1,0 +1,2 @@
+import {Redirect} from 'expo-router';import {ActivityIndicator} from 'react-native';import {useSession,homeFor} from '../src/session';import {Screen,Button,ErrorBox} from '../src/ui';
+export default function Index(){const {user,loading,error,bootstrap,t}=useSession();if(loading)return <Screen title="Labour Youth"><ActivityIndicator accessibilityLabel={t('loading')}/></Screen>;if(error)return <Screen title={t('welcome')}><ErrorBox code={error}/><Button label={t('retry')} onPress={bootstrap}/></Screen>;return <Redirect href={(user?homeFor(user):'/(public)/login') as any}/>;}

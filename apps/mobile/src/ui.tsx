@@ -1,0 +1,19 @@
+import React,{useState} from 'react';
+import {View,Text,Pressable,TextInput,StyleSheet,ScrollView,KeyboardAvoidingView,Platform,ActivityIndicator,TextInputProps} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSession} from './session';
+export const colors={ink:'#173F37',muted:'#52645E',paper:'#F7F8F2',white:'#FFFFFF',line:'#BAC6BF',accent:'#F4C66A',danger:'#A42E35',soft:'#E7EFE8'};
+export function Screen({title,subtitle,children}:{title:string;subtitle?:string;children:React.ReactNode}){
+ return <SafeAreaView style={{flex:1,backgroundColor:colors.paper}} edges={['bottom','left','right']}><KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS==='ios'?'padding':undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.page}><View style={s.heading}><Text accessibilityRole="header" style={s.title}>{title}</Text>{subtitle&&<Text style={s.body}>{subtitle}</Text>}</View>{children}</ScrollView></KeyboardAvoidingView></SafeAreaView>;
+}
+export function Button({label,onPress,secondary=false,disabled=false}:{label:string;onPress:()=>void|Promise<unknown>;secondary?:boolean;disabled?:boolean}){
+ const [busy,setBusy]=useState(false);
+ return <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{disabled:disabled||busy,busy}} disabled={disabled||busy} onPress={async()=>{setBusy(true);try{await onPress();}finally{setBusy(false);}}} style={({pressed})=>[s.button,secondary&&s.secondary,(pressed||disabled||busy)&&{opacity:0.6}]}>{busy?<ActivityIndicator color={secondary?colors.ink:colors.white}/>:<Text style={[s.buttonText,secondary&&{color:colors.ink}]}>{label}</Text>}</Pressable>;
+}
+export function Field({label,...props}:TextInputProps&{label:string}){return <View style={{gap:8}}><Text style={s.label}>{label}</Text><TextInput accessibilityLabel={label} placeholderTextColor={colors.muted} style={s.input} {...props}/></View>;}
+export function Card({children}:{children:React.ReactNode}){return <View style={s.card}>{children}</View>;}
+export function Copy({children,strong=false}:{children:React.ReactNode;strong?:boolean}){return <Text style={[s.body,strong&&{fontWeight:'700',color:colors.ink}]}>{children}</Text>;}
+export function ErrorBox({code}:{code:string}){const {t}=useSession();return code?<View accessibilityRole="alert" accessibilityLiveRegion="polite" style={s.error}><Text style={{color:colors.danger,fontSize:16}}>{t(code)}</Text></View>:null;}
+export function Empty({text}:{text:string}){return <Card><Copy>{text}</Copy></Card>;}
+export function Badge({status}:{status:string}){const {t}=useSession();return <View style={s.badge}><Text style={{color:colors.ink,fontWeight:'600'}}>{t(status)}</Text></View>;}
+export const s=StyleSheet.create({page:{padding:24,paddingBottom:40,gap:20,width:'100%',maxWidth:680,alignSelf:'center'},heading:{gap:12,paddingTop:12,paddingBottom:8},title:{fontSize:32,fontWeight:'700',color:colors.ink,letterSpacing:-0.8},body:{fontSize:16,lineHeight:25,color:colors.muted},label:{fontSize:15,fontWeight:'600',color:colors.ink},input:{backgroundColor:colors.white,borderWidth:1,borderColor:colors.line,borderRadius:12,minHeight:52,padding:14,fontSize:17,color:colors.ink},button:{minHeight:54,backgroundColor:colors.ink,paddingVertical:16,paddingHorizontal:20,borderRadius:14,alignItems:'center',justifyContent:'center'},buttonText:{fontSize:17,fontWeight:'600',color:colors.white,textAlign:'center'},secondary:{backgroundColor:colors.soft,borderWidth:1,borderColor:colors.line},card:{backgroundColor:colors.white,borderRadius:20,borderWidth:1,borderColor:colors.line,padding:20,gap:12},error:{padding:16,borderRadius:12,backgroundColor:'#FFF0EE'},badge:{alignSelf:'flex-start',paddingVertical:8,paddingHorizontal:12,borderRadius:30,backgroundColor:colors.soft},row:{flexDirection:'row',gap:12,flexWrap:'wrap'}});
