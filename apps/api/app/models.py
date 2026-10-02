@@ -141,6 +141,19 @@ class Address(Entity, Base):
     point: Mapped[str] = mapped_column(Geography("POINT", srid=4326))
 
 
+class Locality(Entity, Base):
+    """Named neighbourhood used as a quick-pick label. Coordinates stay NULL until the owner configures them."""
+
+    __tablename__ = "localities"
+    city_id: Mapped[uuid.UUID] = fk("cities")
+    name: Mapped[str] = mapped_column(String(100))
+    name_hi: Mapped[str] = mapped_column(String(100))
+    slug: Mapped[str] = mapped_column(String(100), unique=True)
+    center: Mapped[str | None] = mapped_column(Geography("POINT", srid=4326))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+
 class ClientProfile(Entity, Base):
     __tablename__ = "client_profiles"
     user_id: Mapped[uuid.UUID] = fk("users", unique=True)
@@ -289,6 +302,21 @@ class JobOffer(Entity, Base):
             unique=True,
             postgresql_where=text("status = 'PENDING'"),
         ),
+    )
+
+
+class JobInterest(Entity, Base):
+    """A worker's 'I am available' on an open job. The employer selecting it creates a normal JobOffer."""
+
+    __tablename__ = "job_interests"
+    job_id: Mapped[uuid.UUID] = fk("job_requests")
+    worker_id: Mapped[uuid.UUID] = fk("worker_profiles")
+    status: Mapped[str] = status("EXPRESSED")
+    distance_m: Mapped[int] = mapped_column(Integer)
+    offer_id: Mapped[uuid.UUID | None] = fk("job_offers")
+    __table_args__ = (
+        UniqueConstraint("job_id", "worker_id"),
+        choices("status", "EXPRESSED WITHDRAWN SELECTED"),
     )
 
 

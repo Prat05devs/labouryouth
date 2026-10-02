@@ -192,3 +192,16 @@ class ReviewInput(Schema):
     rating: int = Field(ge=1, le=5)
     tags: list[str] = Field(default_factory=list, max_length=10)
     comment: str = Field(default="", max_length=2000)
+
+
+class QuickJobInput(Schema):
+    service_id: UUID
+    service_area_id: UUID
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+    locality: str = Field(default="", max_length=120)
+    start_at: AwareDatetime
+    hours: int = Field(default=8, ge=1, le=16)
+    headcount: int = Field(ge=1, le=100)
+    wage_per_day_paise: int = Field(gt=0, le=100000000)
+    notes: str = Field(default="", max_length=500)

@@ -48,3 +48,8 @@ Replacement reasons: NO_SHOW, UNAVAILABLE, QUALITY_ISSUE, CLIENT_REQUEST, WORKER
 ## Relationships, indexes and retention
 Client 1:N JobRequests; job 1:N offers/assignments/requirements/matches; assignment 1:N shifts; shift 1:N attendance/events/earning adjustments. Worker 1:N verification/documents/services/languages/availability/assignments. Job status, worker status, open offer expiry, all foreign-key lookups, geography, notification recipient+created, worker ledger+created and outbox pending indexes are required.
 Passwords and token hashes are highly restricted. Documents, phones, addresses and exact coordinates are personal data; do not expose them to unassigned workers or public catalog. Clients see assigned worker basics and verification summary, never identity files/bank details. Log redaction and least-privilege DB/storage access apply. Retention durations need approved policy; preserve legally/operationally necessary financial and incident history under controlled access while honoring account deletion. Backups follow the same retention policy.
+
+## Marketplace tables (migration 0002)
+`localities(city_id, name, name_hi, slug unique, center NULL, active, sort_order)` is a label list; coordinates stay NULL until verified.
+`job_interests(job_id, worker_id, status EXPRESSED|WITHDRAWN|SELECTED, distance_m, offer_id NULL)` with UNIQUE(job_id, worker_id). It records willingness only; money, schedule and attendance still live on JobOffer, Assignment, Shift and AttendanceEvent. Budgets on a quick post are stored in integer paise (budget_min = budget_max = daily wage).
+

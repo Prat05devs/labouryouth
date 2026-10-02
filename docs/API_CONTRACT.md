@@ -36,6 +36,14 @@ Idempotency-Key required for offer acceptance, check-in, completion and financia
 | POST /jobs/{id}/submit | Owner; validate complete demand, snapshot, area, schedule, requirements → SUBMITTED |
 | POST /jobs/{id}/cancel | Owner/permitted operations `{reason}` → Cancellation and updated aggregate under policy |
 | GET /jobs/{id}/matches | Operations only; never expose unassigned worker personal documents |
+| POST /jobs/quick | CLIENT `{service_id,service_area_id,latitude,longitude,locality?,start_at,hours,headcount,wage_per_day_paise,notes?}` → job opened (MATCHING) and eligible nearby workers notified; start within 14 days and inside the service area |
+| GET /worker/jobs/nearby | WORKER `radius_km` in 2/5/10/20, `service_id?`, `today?`, `engagement?` DAILY or PERMANENT, `min_wage_paise?`, `latitude/longitude?` (else saved availability point, else 422 LOCATION_REQUIRED); only open jobs with free slots for the worker's skills; employer shown by first name and real review trust only |
+| POST /jobs/{id}/interest | WORKER, idempotent; requires the same eligibility as an offer (ACTIVE, online, skill, verification, radius, rate, no conflict) and a free slot |
+| POST /jobs/{id}/interest/withdraw | WORKER own interest only |
+| GET /jobs/{id}/interests | Job owner or operations; worker name, skills, experience, completed jobs, trust, distance; no documents or contact details |
+| POST /jobs/{id}/interests/{interest_id}/select | Job owner only; locks job, re-checks eligibility and headcount, creates a PENDING JobOffer at the posted wage (expires in 4 hours or at job end); 409 JOB_ALREADY_ASSIGNED when full |
+| GET /wages/benchmark | Authenticated `service_id`, `days`; min, median, max of real DAILY postings, null until 5 samples |
+| GET /localities | Public named neighbourhood labels |
 | GET /offers | WORKER own offers |
 | POST /offers/{id}/accept | Owner WORKER + idempotency; revalidate/lock → Assignment+shifts or 409 JOB_ALREADY_ASSIGNED |
 | POST /offers/{id}/decline | Owner pending offer → DECLINED |

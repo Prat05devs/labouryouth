@@ -17,6 +17,8 @@ Updated: 2 October 2026. This is a build report, not a release claim. The [Phase
 
 - Web information pages (about, privacy, terms, worker policy, support/FAQ, contact, delete-account) and mobile Account links exist as drafts. Legal text is NOT final and needs owner/legal review; the App Store privacy questionnaire, iOS privacy manifest review and Play data-safety form are still pending and externally blocked.
 
+- Marketplace backend (Decisions 13 to 16): quick post, nearby feed, interest, employer selection, wage benchmark, localities, extended catalog seed and migration 0002 are implemented. Verified so far: Ruff and compile pass, OpenAPI lists the new routes. NOT verified: the migration, seed and the new tests (`tests/test_marketplace.py`) have not been run because no PostgreSQL/PostGIS is available yet (Docker unresponsive, local disk full). Treat the marketplace as untested until they pass on PostgreSQL/PostGIS.
+
 ## Not yet verified or shipped
 - PostgreSQL/PostGIS migration, seed and integration tests need a responsive database. Docker Desktop did not respond to local checks, so concurrency, geo and ledger behavior are not claimed as passing. Do not substitute a mock database for this gate.
 - No physical iPhone/Android usability pass, signed EAS build, App Store Connect upload or internal TestFlight submission has been performed. A JavaScript export is not a signed build.

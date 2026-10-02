@@ -1,8 +1,8 @@
 export type Section={h:string;p?:string[];list?:string[]};
 export type InfoPage={slug:string;title:string;summary:string;sections:Section[];pending?:string[];legal?:boolean};
 
-/* Content describes what the product does today (see docs/PRODUCT_SCOPE.md). Legal commitments —
-   retention periods, company identity, grievance contact, governing law — are NOT invented here:
+/* Content describes what the product does today (see docs/PRODUCT_SCOPE.md). Legal commitments (
+   retention periods, company identity, grievance contact, governing law) are NOT invented here:
    they are listed under `pending` until the owner supplies reviewed text. */
 export const infoPages:InfoPage[]=[
   {slug:'about',title:'About Labour Youth',summary:'Local staffing, coordinated by a real team. We are starting in Dehradun.',sections:[

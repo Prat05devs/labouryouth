@@ -9,7 +9,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
-from . import admin, auth, profiles, workflows
+from . import admin, auth, marketplace, profiles, workflows
 from .config import settings
 from .dependencies import DB
 from .errors import DomainError
@@ -91,5 +91,5 @@ async def ready(db: DB):
     return {"status": "ready"}
 
 
-for router in (auth.router, profiles.router, workflows.router, admin.router):
+for router in (auth.router, profiles.router, workflows.router, marketplace.router, admin.router):
     app.include_router(router, prefix="/api/v1")
