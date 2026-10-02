@@ -188,5 +188,11 @@
   "EARNING": "Shift earning",
   "PAYOUT": "Payout",
   "experience_years": "Experience in years",
-  "language": "Language"
+  "language": "Language",
+  "helpAndLegal": "Help and information",
+  "privacyPolicy": "Privacy",
+  "termsOfUse": "Terms of use",
+  "workerPolicy": "Worker policy",
+  "getSupport": "Support",
+  "linkUnavailable": "This page is not available yet. Please try again later."
 }

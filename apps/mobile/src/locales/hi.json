@@ -188,5 +188,11 @@
   "EARNING": "शिफ़्ट की कमाई",
   "PAYOUT": "भुगतान",
   "experience_years": "अनुभव (वर्षों में)",
-  "language": "भाषा"
+  "language": "भाषा",
+  "helpAndLegal": "सहायता और जानकारी",
+  "privacyPolicy": "गोपनीयता",
+  "termsOfUse": "उपयोग की शर्तें",
+  "workerPolicy": "वर्कर नीति",
+  "getSupport": "सहायता",
+  "linkUnavailable": "यह पेज अभी उपलब्ध नहीं है। कृपया बाद में पुनः प्रयास करें।"
 }
