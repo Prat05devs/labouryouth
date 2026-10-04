@@ -38,6 +38,6 @@ export const registration = {
 export const languagePairs = [
   ['I want work', 'मुझे काम चाहिए'],
   ['I want to hire', 'मुझे कामगार चाहिए'],
-  ['Wage shown up front', 'मज़दूरी पहले से दिखती है'],
+  ['Wage shown up front', 'काम के पैसे पहले से दिखते हैं'],
   ['Chat on WhatsApp', 'व्हाट्सऐप पर बात करें'],
 ] as const;
