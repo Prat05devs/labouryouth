@@ -23,6 +23,20 @@ Official references checked 1 October 2026:
 - https://docs.expo.dev/eas/json/
 - https://nextjs.org/docs/app/getting-started/installation
 
+## Local Xcode and Android builds (Decision 22)
+App identifier `in.labouryouth.app` on both platforms. Every release command runs with `LY_RELEASE=1` and `EXPO_PUBLIC_API_URL=https://<deployed-api>/api/v1`; the config refuses to build otherwise.
+```sh
+cd apps/mobile
+export LY_RELEASE=1 EXPO_PUBLIC_API_URL=https://<deployed-api>/api/v1
+npx expo prebuild --clean            # generates ios/ and android/ (both git-ignored)
+# iOS: open ios/LabourYouth.xcworkspace, set Team and signing, Product > Archive, Distribute App > TestFlight
+# Android (SDK at ~/Library/Android/sdk, JDK 17):
+export ANDROID_HOME=$HOME/Library/Android/sdk
+keytool -genkeypair -v -keystore ~/labouryouth-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000   # once; keep outside Git, back it up
+cd android && ./gradlew assembleRelease bundleRelease   # app-release.apk and app-release.aab
+```
+Configure the upload keystore in `android/gradle.properties` (local, untracked) before the release tasks. Play App Signing holds the app signing key; losing the upload key needs a Play support reset.
+
 ## Smart link and rollback
 Permanent `/app`: configured iOS TestFlight/App Store target and Android store/testing target; desktop shows available choices. Validate URLs against configured allowlist, never arbitrary user redirect input. If links are unconfigured show honest unavailable state, not a fabricated download.
 Deploy backward-compatible migrations before compatible API/mobile. Back up first; irreversible migration rollback requires restore plan. Mobile cannot be instantly recalled: retain API compatibility, use feature flags and server-enforced safety checks. Record build version/schema revision and roll back web/API only when schema compatibility is proven.

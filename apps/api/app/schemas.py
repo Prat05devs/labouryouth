@@ -69,14 +69,16 @@ class AddressInput(Schema):
     locality: str = Field(min_length=1, max_length=120)
     state: str = Field(min_length=2, max_length=100)
     postal_code: str = Field(pattern=r"^\d{6}$")
-    latitude: float = Field(ge=-90, le=90, allow_inf_nan=False)
-    longitude: float = Field(ge=-180, le=180, allow_inf_nan=False)
+    latitude: float | None = Field(default=None, ge=-90, le=90, allow_inf_nan=False)
+    longitude: float | None = Field(default=None, ge=-180, le=180, allow_inf_nan=False)
+    maps_url: str | None = Field(default=None, max_length=500)
 
 
 class ClientInput(Schema):
     full_name: str = Field(min_length=2, max_length=160)
     client_type: Literal["INDIVIDUAL", "BUSINESS"] = "INDIVIDUAL"
     primary_address_id: UUID
+    whatsapp_number: str | None = Field(default=None, min_length=10, max_length=30)
 
 
 class Window(Schema):
@@ -197,8 +199,9 @@ class ReviewInput(Schema):
 class QuickJobInput(Schema):
     service_id: UUID
     service_area_id: UUID
-    latitude: float = Field(ge=-90, le=90)
-    longitude: float = Field(ge=-180, le=180)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    maps_url: str | None = Field(default=None, max_length=500)
     locality: str = Field(default="", max_length=120)
     start_at: AwareDatetime
     hours: int = Field(default=8, ge=1, le=16)

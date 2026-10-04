@@ -14,7 +14,7 @@ export async function generateMetadata({params}:{params:Promise<{page:string}>})
 
 function Contact(){
   const email=process.env.SUPPORT_EMAIL;
-  return <Card><CardHeader><CardTitle className="flex items-center gap-2 font-display text-2xl font-normal uppercase"><Mail className="size-5 text-primary"/>Email us</CardTitle><CardDescription>Include the email address on your account so we can help quickly.</CardDescription></CardHeader>
+  return <Card><CardHeader><CardTitle className="flex items-center gap-2 font-display text-2xl font-normal"><Mail className="size-5 text-primary"/>Email us</CardTitle><CardDescription>Include the email address on your account so we can help quickly.</CardDescription></CardHeader>
     <CardContent>{email?<Button asChild><a href={'mailto:'+email}>{email}</a></Button>:<p className="text-sm text-muted-foreground">Our support email is being set up and will appear here. Until then, you can reach the team from inside the app once you are signed in.</p>}</CardContent></Card>;
 }
 
@@ -28,14 +28,14 @@ export default async function Info({params}:{params:Promise<{page:string}>}){
       <article className="max-w-3xl">
         <h1 className="text-5xl md:text-6xl">{p.title}</h1>
         <p className="mt-3 text-lg text-muted-foreground">{p.summary}</p>
-        {p.legal&&!reviewed&&<Alert className="mt-8 border-orange-brand/60 bg-orange-brand/10"><CircleAlert className="text-orange-brand"/><AlertTitle>Draft, pending owner review</AlertTitle><AlertDescription>This page describes how the app works today. It is not yet the final legal text and is not a public-launch policy.</AlertDescription></Alert>}
+        {p.legal&&!reviewed&&<Alert className="mt-8 border-orange-brand/60 bg-orange-brand/10"><CircleAlert className="text-brass-text"/><AlertTitle>Draft, pending owner review</AlertTitle><AlertDescription>This page describes how the app works today. It is not yet the final legal text and is not a public-launch policy.</AlertDescription></Alert>}
         <div className="mt-10 space-y-10">
           {p.sections.map(s=><section key={s.h}><h2 className="text-3xl">{s.h}</h2>{s.p?.map(t=><p key={t} className="mt-3 leading-relaxed text-foreground/85">{t}</p>)}{s.list&&<ul className="mt-3 list-disc space-y-2 pl-5 marker:text-primary">{s.list.map(t=><li key={t} className="leading-relaxed text-foreground/85">{t}</li>)}</ul>}</section>)}
           {p.slug==='support'&&<><Contact/><section><h2 className="text-3xl">Common questions</h2><Accordion type="single" collapsible className="mt-3 [&_h3]:font-sans [&_h3]:normal-case [&_h3]:tracking-normal">{faq.map(([q,a])=><AccordionItem key={q} value={q}><AccordionTrigger className="text-base font-semibold">{q}</AccordionTrigger><AccordionContent className="text-base text-muted-foreground">{a}</AccordionContent></AccordionItem>)}</Accordion></section><Button asChild variant="outline"><Link href="/information/delete-account">Delete my account</Link></Button></>}
-          {p.slug==='contact'&&<><Contact/><Card><CardHeader><CardTitle className="flex items-center gap-2 font-display text-2xl font-normal uppercase"><Smartphone className="size-5 text-primary"/>In the app</CardTitle><CardDescription>Signed-in users can follow up on a request, replacement or incident from inside the app.</CardDescription></CardHeader></Card></>}
+          {p.slug==='contact'&&<><Contact/><Card><CardHeader><CardTitle className="flex items-center gap-2 font-display text-2xl font-normal"><Smartphone className="size-5 text-primary"/>In the app</CardTitle><CardDescription>Signed-in users can follow up on a request, replacement or incident from inside the app.</CardDescription></CardHeader></Card></>}
           {p.slug==='delete-account'&&<Button asChild variant="outline"><Link href="/information/support">Contact support</Link></Button>}
         </div>
-        {p.pending&&!reviewed&&<Card className="mt-12 border-dashed"><CardHeader><CardTitle className="font-display text-xl font-normal uppercase">To be confirmed by Labour Youth</CardTitle><CardDescription>These items need an owner decision before this page can be finalised.</CardDescription></CardHeader><CardContent><ul className="list-disc space-y-1.5 pl-5 text-sm text-muted-foreground">{p.pending.map(t=><li key={t}>{t}</li>)}</ul></CardContent></Card>}
+        {p.pending&&!reviewed&&<Card className="mt-12 border-dashed"><CardHeader><CardTitle className="font-display text-xl font-normal">To be confirmed by Labour Youth</CardTitle><CardDescription>These items need an owner decision before this page can be finalised.</CardDescription></CardHeader><CardContent><ul className="list-disc space-y-1.5 pl-5 text-sm text-muted-foreground">{p.pending.map(t=><li key={t}>{t}</li>)}</ul></CardContent></Card>}
       </article>
     </div>
   </main>;

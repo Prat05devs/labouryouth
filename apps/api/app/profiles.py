@@ -12,9 +12,11 @@ from .config import settings
 from .dependencies import DB, Actor, permit
 from .domain import worker_for
 from .errors import require
+from .maps import pin_for
 from .models import *
 from .repository import get, listing, public
 from .schemas import AddressInput, AvailabilityInput, ClientInput, VerificationInput
+from .security import normalize_phone
 
 router = APIRouter()
 
@@ -39,14 +41,26 @@ async def addresses(db: DB, user: Actor):
     return await listing(db, select(Address).where(Address.owner_id == user.id))
 
 
+async def place(db, row, data):
+    """Fill an address from the form; the pin comes from coordinates or a Google Maps link (Decision 21)."""
+    area = await db.scalar(
+        select(ServiceArea).where(ServiceArea.city_id == data.city_id, ServiceArea.active).limit(1)
+    )
+    require(area, "OUTSIDE_SERVICE_AREA", 422)
+    point, lat, lng, precision = await pin_for(
+        db, area, data.maps_url, data.latitude, data.longitude, inside=False
+    )
+    for k, v in data.model_dump(exclude={"latitude", "longitude"}).items():
+        setattr(row, k, v)
+    row.latitude, row.longitude, row.point, row.location_precision = str(lat), str(lng), point, precision
+
+
 @router.post("/addresses", status_code=201)
 async def address(data: AddressInput, db: DB, user: Actor):
     city = await get(db, City, data.city_id)
     require(city.active, "OUTSIDE_SERVICE_AREA", 422)
-    d = data.model_dump()
-    d["latitude"] = str(data.latitude)
-    d["longitude"] = str(data.longitude)
-    row = Address(owner_id=user.id, point=f"SRID=4326;POINT({data.longitude} {data.latitude})", **d)
+    row = Address(owner_id=user.id)
+    await place(db, row, data)
     db.add(row)
     await db.flush()
     return public(row)
@@ -57,9 +71,7 @@ async def edit_address(id: uuid.UUID, data: AddressInput, db: DB, user: Actor):
     row = await get(db, Address, id)
     require(row.owner_id == user.id, "NOT_FOUND", 404)
     await get(db, City, data.city_id)
-    for k, v in data.model_dump().items():
-        setattr(row, k, str(v) if k in ("latitude", "longitude") else v)
-    row.point = f"SRID=4326;POINT({data.longitude} {data.latitude})"
+    await place(db, row, data)
     await db.flush()
     return public(row)
 
@@ -80,6 +92,8 @@ async def client_save(data: ClientInput, request: Request, db: DB, user: Actor):
     require(address.owner_id == user.id, "NOT_FOUND", 404)
     row.client_type = data.client_type
     row.primary_address_id = address.id
+    if data.whatsapp_number:
+        row.whatsapp_number = normalize_phone(data.whatsapp_number)
     row.onboarding_complete = True
     user.full_name = data.full_name
     return public(row)

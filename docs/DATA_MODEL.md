@@ -8,8 +8,8 @@ UUID primary keys; created_at/updated_at UTC except immutable events/ledger whic
 | UserRole | user_id, role CLIENT/WORKER/SUPER_ADMIN/OPERATIONS/VERIFICATION/FINANCE/SUPPORT; unique(user,role); self-service restricted to CLIENT/WORKER |
 | Session / Device | user_id, device label/platform?, refresh_hash unique, family_id, expires_at, revoked_at?, rotation parent?, last_seen_at; no raw tokens |
 | PasswordReset | user_id, token_hash unique, expires_at, consumed_at; atomic single use |
-| ClientProfile | user_id unique, client_type INDIVIDUAL/BUSINESS, primary_address_id?, onboarding_complete |
-| Address | owner_id, label, line1/line2, locality, city_id, state, postal_code, country, lat/lng/geography; ownership enforced |
+| ClientProfile | user_id unique, client_type INDIVIDUAL/BUSINESS, primary_address_id?, onboarding_complete, whatsapp_number? (E.164) |
+| Address | owner_id, label, line1/line2, locality, city_id, state, postal_code, country, lat/lng/geography, maps_url?, location_precision PIN/AREA; ownership enforced |
 | Organization / Member / Location | reserved boundaries: organization identity, user membership+permission, organization-owned address; not Phase 1 B2B UI |
 | WorkerProfile | user_id unique, bio, experience_years, photo_document_id?, onboarding_step/progress, onboarding_status, worker_status, preferred area references, engagement_types, rate expectations, submitted_at |
 | WorkerService | worker_id, service_id, experience/validated attributes; unique pair |
@@ -20,7 +20,7 @@ UUID primary keys; created_at/updated_at UTC except immutable events/ledger whic
 | ServiceCategory | name, name_hi, slug unique, icon, parent_id?, active, sort_order, requirement_schema, verification_policy; prevent hierarchy cycles |
 | City | name, state, country, slug unique, active, timezone |
 | ServiceArea | city_id, name, slug, boundary geography/radius+center, active; unique city+slug |
-| JobRequest | client_id, service_id, engagement_type, service_area_id, immutable location_snapshot+geography, start_at/end_at, schedule windows, recurring metadata/timezone, headcount>0, budget_min/max?, currency, notes, status, submitted_at |
+| JobRequest | client_id, service_id, engagement_type, service_area_id, immutable location_snapshot+geography, start_at/end_at, schedule windows, recurring metadata/timezone, headcount>0, budget_min/max?, currency, notes, status, submitted_at, location_precision PIN/AREA, maps_url?, contact_whatsapp? (revealed only via /jobs/{id}/contact) |
 | JobRequirement | job_id, key, validated value JSONB; unique(job,key); validate against service schema at submit |
 | CandidateMatch | job_id, worker_id, distance_m, eligibility reasons, scoring version, score_components, final_score, status ELIGIBLE/INELIGIBLE/SELECTED/STALE, generated_at; current unique pair, audit/version history |
 | JobOffer | job_id, worker_id, candidate_id?, replacement_request_id?, status, offered_at, expires_at, responded_at?, agreed_worker_amount_paise; unique pending job/worker intent |

@@ -43,9 +43,7 @@ async def create_job(data: JobInput, request: Request, db: DB, user: Actor):
     require(data.schedule[0].start_at > now(), "SCHEDULE_INVALID", 422)
     require(
         await db.scalar(
-            select(func.ST_DWithin(Address.point, ServiceArea.center, ServiceArea.radius_m)).where(
-                Address.id == address.id, ServiceArea.id == area.id
-            )
+            select(func.ST_DWithin(Address.point, area.center, area.radius_m)).where(Address.id == address.id)
         ),
         "OUTSIDE_SERVICE_AREA",
         422,
@@ -59,7 +57,10 @@ async def create_job(data: JobInput, request: Request, db: DB, user: Actor):
     j = JobRequest(
         client_id=user.id,
         location_snapshot=public(address),
-        point=address.point,
+        point=select(Address.point).where(Address.id == address.id).scalar_subquery(),
+        location_precision=address.location_precision,
+        maps_url=address.maps_url,
+        contact_whatsapp=profile.whatsapp_number or user.phone_number,
         start_at=data.schedule[0].start_at,
         end_at=data.schedule[-1].end_at,
         **payload,

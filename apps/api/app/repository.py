@@ -12,7 +12,16 @@ async def get(db, model, id, lock=False):
 
 
 def public(obj, exclude=()):
-    hidden = {"password_hash", "refresh_hash", "token_hash", "storage_key", "point", "center"} | set(exclude)
+    hidden = {
+        "password_hash",
+        "refresh_hash",
+        "token_hash",
+        "storage_key",
+        "point",
+        "center",
+        "maps_url",
+        "contact_whatsapp",
+    } | set(exclude)
     return jsonable_encoder(
         {p.key: getattr(obj, p.key) for p in inspect(type(obj)).column_attrs if p.key not in hidden}
     )

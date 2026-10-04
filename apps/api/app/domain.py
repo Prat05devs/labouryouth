@@ -102,9 +102,12 @@ class MatchingService:
         )
         require(job.engagement_type in worker.engagement_types, "ENGAGEMENT_MISMATCH")
         distance = await db.scalar(
-            select(func.ST_Distance(WorkerAvailability.point, JobRequest.point)).where(
-                WorkerAvailability.id == avail.id, JobRequest.id == job.id
-            )
+            select(
+                func.ST_Distance(
+                    WorkerAvailability.point,
+                    select(JobRequest.point).where(JobRequest.id == job.id).scalar_subquery(),
+                )
+            ).where(WorkerAvailability.id == avail.id)
         )
         require(distance is not None and distance <= avail.radius_m, "OUTSIDE_SERVICE_AREA")
         require(
@@ -317,7 +320,12 @@ class ShiftService:
                 func.ST_DWithin(
                     JobRequest.point,
                     func.ST_GeogFromText(f"SRID=4326;POINT({data.longitude} {data.latitude})"),
-                    cfg.geofence_radius_meters,
+                    # Without a map pin the job point is the area centre, so only presence in the area is checked.
+                    cfg.geofence_radius_meters
+                    if j.location_precision == "PIN"
+                    else select(ServiceArea.radius_m)
+                    .where(ServiceArea.id == j.service_area_id)
+                    .scalar_subquery(),
                 )
             ).where(JobRequest.id == j.id)
         ):

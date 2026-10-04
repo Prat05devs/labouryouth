@@ -10,6 +10,7 @@ from .dependencies import DB, Actor, permit
 from .domain import LIVE, MatchingService
 from .errors import require
 from .events import audit, emit
+from .maps import contact_links, pin_for
 from .models import (
     Address,
     Assignment,
@@ -77,12 +78,7 @@ async def quick_job(data: QuickJobInput, request: Request, db: DB, user: Actor):
     area = await get(db, ServiceArea, data.service_area_id)
     require(service.active and area.active, "OUTSIDE_SERVICE_AREA", 422)
     require(now() < data.start_at <= now() + timedelta(days=14), "SCHEDULE_INVALID", 422)
-    point = f"SRID=4326;POINT({data.longitude} {data.latitude})"
-    require(
-        await db.scalar(select(func.ST_DWithin(func.ST_GeogFromText(point), area.center, area.radius_m))),
-        "OUTSIDE_SERVICE_AREA",
-        422,
-    )
+    point, lat, lng, precision = await pin_for(db, area, data.maps_url, data.latitude, data.longitude)
     city = await get(db, City, area.city_id)
     address = Address(
         owner_id=user.id,
@@ -92,9 +88,11 @@ async def quick_job(data: QuickJobInput, request: Request, db: DB, user: Actor):
         locality=data.locality,
         state=city.state,
         postal_code="",
-        latitude=str(data.latitude),
-        longitude=str(data.longitude),
+        latitude=str(lat),
+        longitude=str(lng),
         point=point,
+        maps_url=data.maps_url,
+        location_precision=precision,
     )
     db.add(address)
     await db.flush()
@@ -106,6 +104,9 @@ async def quick_job(data: QuickJobInput, request: Request, db: DB, user: Actor):
         engagement_type="DAILY",
         location_snapshot=public(address),
         point=point,
+        location_precision=precision,
+        maps_url=data.maps_url,
+        contact_whatsapp=profile.whatsapp_number or user.phone_number,
         start_at=data.start_at,
         end_at=end_at,
         schedule=[{"start_at": data.start_at.isoformat(), "end_at": end_at.isoformat()}],
@@ -137,7 +138,7 @@ async def nearby(
     request: Request,
     db: DB,
     user: Actor,
-    radius_km: Literal[2, 5, 10, 20] = 10,
+    radius_km: int = Query(default=10),
     service_id: UUIDType | None = None,
     today: bool = False,
     engagement: Literal["DAILY", "PERMANENT"] | None = None,
@@ -146,6 +147,7 @@ async def nearby(
     longitude: float | None = Query(default=None, ge=-180, le=180),
 ):
     permit(request, "WORKER")
+    require(radius_km in (2, 5, 10, 20), "VALIDATION_ERROR", 422)
     worker = await worker_for(db, user.id)
     if latitude is not None and longitude is not None:
         origin = func.ST_GeogFromText(f"SRID=4326;POINT({longitude} {latitude})")
@@ -197,6 +199,7 @@ async def nearby(
                 "service_name_hi": service.name_hi,
                 "locality": job.location_snapshot.get("locality", ""),
                 "distance_m": int(metres),
+                "approximate": job.location_precision == "AREA",
                 "slots_left": job.headcount - taken,
                 "employer_first_name": client.full_name.split()[0],
                 "employer_trust": await trust(db, client.id),
@@ -204,6 +207,40 @@ async def nearby(
             }
         )
     return {"items": items, "next_cursor": None}
+
+
+@router.get("/jobs/{id}/contact")
+async def hirer_contact(id: UUIDType, request: Request, db: DB, user: Actor):
+    """Hirer's WhatsApp number and map link, unlocked only for a worker the hirer has selected (Decision 21)."""
+    permit(request, "WORKER")
+    worker = await worker_for(db, user.id)
+    job = await get(db, JobRequest, id)
+    selected = await db.scalar(
+        select(JobOffer.id).where(
+            JobOffer.job_id == job.id,
+            JobOffer.worker_id == worker.id,
+            JobOffer.status.in_(["PENDING", "ACCEPTED"]),
+        )
+    ) or await db.scalar(
+        select(Assignment.id).where(
+            Assignment.job_id == job.id, Assignment.worker_id == worker.id, Assignment.status.in_(LIVE)
+        )
+    )
+    require(selected, "NOT_FOUND", 404)
+    snap = job.location_snapshot or {}
+    client = await get(db, User, job.client_id)
+    return {
+        "employer_first_name": client.full_name.split()[0],
+        "locality": snap.get("locality", ""),
+        "address_line": snap.get("line1", ""),
+        **contact_links(
+            job.contact_whatsapp,
+            job.maps_url,
+            job.location_precision,
+            snap.get("latitude"),
+            snap.get("longitude"),
+        ),
+    }
 
 
 @router.post("/jobs/{id}/interest", status_code=201)

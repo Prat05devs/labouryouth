@@ -24,7 +24,7 @@ Idempotency-Key required for offer acceptance, check-in, completion and financia
 | POST /me/deletion-request | Auth + current password/reauth proof, explicit confirmation → 202; revoke sessions and record request |
 | GET /services; GET /locations | Catalog DB data incl localized names, requirements and active areas; no hard-coded services |
 | GET/PUT /client/profile | CLIENT own short onboarding fields |
-| GET/POST /addresses; PUT /addresses/{id} | Own addresses; structured fields and lat/lng; never mutate job snapshot |
+| GET/POST /addresses; PUT /addresses/{id} | Own addresses; structured fields plus `maps_url?` (Google Maps link) or `latitude/longitude?`; pin read from the link, else AREA precision at the service-area centre; non-Maps links 422 MAPS_LINK_INVALID; never mutate job snapshot |
 | GET/PUT /worker/profile | WORKER own details/progress; server-owned statuses excluded |
 | PUT /worker/onboarding/{step} | Validated named step payload; save progress/version; no arbitrary JSON status mutation |
 | POST /worker/onboarding/submit | Validate all required steps → under review |
@@ -36,7 +36,9 @@ Idempotency-Key required for offer acceptance, check-in, completion and financia
 | POST /jobs/{id}/submit | Owner; validate complete demand, snapshot, area, schedule, requirements → SUBMITTED |
 | POST /jobs/{id}/cancel | Owner/permitted operations `{reason}` → Cancellation and updated aggregate under policy |
 | GET /jobs/{id}/matches | Operations only; never expose unassigned worker personal documents |
-| POST /jobs/quick | CLIENT `{service_id,service_area_id,latitude,longitude,locality?,start_at,hours,headcount,wage_per_day_paise,notes?}` → job opened (MATCHING) and eligible nearby workers notified; start within 14 days and inside the service area |
+| POST /jobs/quick | CLIENT `{service_id,service_area_id,maps_url?,latitude?,longitude?,locality?,start_at,hours,headcount,wage_per_day_paise,notes?}` → job opened (MATCHING) and eligible nearby workers notified; start within 14 days and inside the service area; `location_precision` PIN or AREA; hirer WhatsApp (profile, else account phone) stored on the job and never returned by listings |
+| GET /jobs/{id}/contact | WORKER only, and only with a PENDING/ACCEPTED offer or live assignment on that job (else 404): `{employer_first_name,locality,address_line,whatsapp,whatsapp_url,call_url,maps_url,location_precision}` |
+| GET /public/jobs, GET /public/workers | No auth, read-only, rate limited; coarse fields only (Decision 18) |
 | GET /worker/jobs/nearby | WORKER `radius_km` in 2/5/10/20, `service_id?`, `today?`, `engagement?` DAILY or PERMANENT, `min_wage_paise?`, `latitude/longitude?` (else saved availability point, else 422 LOCATION_REQUIRED); only open jobs with free slots for the worker's skills; employer shown by first name and real review trust only |
 | POST /jobs/{id}/interest | WORKER, idempotent; requires the same eligibility as an offer (ACTIVE, online, skill, verification, radius, rate, no conflict) and a free slot |
 | POST /jobs/{id}/interest/withdraw | WORKER own interest only |
@@ -49,7 +51,7 @@ Idempotency-Key required for offer acceptance, check-in, completion and financia
 | POST /offers/{id}/decline | Owner pending offer → DECLINED |
 | GET /assignments; GET /assignments/{id} | Assigned worker / owning client / operations |
 | POST /assignments/{id}/en-route; /arrived; /prepare-next-shift | Assigned worker; enforce transition and shift readiness |
-| POST /shifts/{id}/check-in | Worker `{latitude,longitude,accuracy_m,device_timestamp}`; foreground; geo/time/actor checks; persisted attendance |
+| POST /shifts/{id}/check-in | Worker `{latitude,longitude,accuracy_m,device_timestamp}`; foreground; geo/time/actor checks; geofence radius is the configured radius for PIN jobs and the service-area radius for AREA jobs; persisted attendance |
 | POST /shifts/{id}/manual-check-in-request | Worker `{reason,location_observation?}` → event/review queue, not automatic success |
 | POST /shifts/{id}/complete | Worker; IN_PROGRESS only; idempotent completion/earning event |
 | POST /replacements; GET /replacements | Involved client/worker `{assignment_id,reason,details}` and own status |

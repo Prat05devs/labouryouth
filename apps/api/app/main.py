@@ -9,12 +9,20 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
-from . import admin, auth, marketplace, profiles, workflows
+from . import admin, auth, marketplace, profiles, public, workflows
 from .config import settings
 from .dependencies import DB
 from .errors import DomainError
 
-app = FastAPI(title="Labour Youth API", version="0.1.0")
+_prod = settings().app_env == "production"
+# The interactive docs and schema map every route; they stay off in production.
+app = FastAPI(
+    title="Labour Youth API",
+    version="0.1.0",
+    docs_url=None if _prod else "/docs",
+    redoc_url=None if _prod else "/redoc",
+    openapi_url=None if _prod else "/openapi.json",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings().allowed_origins.split(","),
@@ -30,6 +38,11 @@ async def request_id(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Request-ID"] = request.state.request_id
     response.headers["Cache-Control"] = "no-store"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    if _prod:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
 
@@ -91,5 +104,12 @@ async def ready(db: DB):
     return {"status": "ready"}
 
 
-for router in (auth.router, profiles.router, workflows.router, marketplace.router, admin.router):
+for router in (
+    auth.router,
+    profiles.router,
+    workflows.router,
+    marketplace.router,
+    public.router,
+    admin.router,
+):
     app.include_router(router, prefix="/api/v1")

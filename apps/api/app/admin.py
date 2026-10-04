@@ -52,6 +52,8 @@ async def overview(request: Request, db: DB, user: Actor):
 
 @router.get("/{section}")
 async def rows(section: str, request: Request, db: DB, user: Actor):
+    # Check staff role before the section name, so non-staff cannot discover which sections exist.
+    permit(request, "OPERATIONS", "VERIFICATION", "FINANCE", "SUPPORT")
     require(section in READS, "NOT_FOUND", 404)
     model, role = READS[section]
     permit(request, role)

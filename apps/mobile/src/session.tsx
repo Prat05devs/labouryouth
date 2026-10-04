@@ -1,5 +1,6 @@
 import React,{createContext,useContext,useState,useEffect,useCallback} from 'react';
 import {api,restore,clearTokens,ApiError} from './api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import en from './locales/en.json';import hi from './locales/hi.json';
 export type User={id:string;full_name:string;roles:string[];preferences:{last_active_mode?:string;locale?:string};client_profile:any;worker_profile:any};
 const Context=createContext<any>(null);
@@ -8,7 +9,8 @@ export function SessionProvider({children}:{children:React.ReactNode}){
  const reload=useCallback(async()=>{const u=await api<User>('/me');setUser(u);if(u.preferences.locale==='hi')setLocale('hi');return u;},[]);
  const bootstrap=useCallback(async()=>{setLoading(true);setError('');try{if(await restore())await reload();else setUser(null);}catch{setError('NETWORK_ERROR');}finally{setLoading(false);}},[reload]);
  useEffect(()=>{bootstrap();},[bootstrap]);
- const logout=async()=>{try{await api('/auth/logout','POST');}finally{await clearTokens();setUser(null);}};
+ // Drafts are per user and must not outlive the session on a shared phone.
+ const logout=async()=>{try{await api('/auth/logout','POST');}finally{await clearTokens();try{const keys=(await AsyncStorage.getAllKeys()).filter(k=>k.startsWith('ly.draft.'));if(keys.length)await AsyncStorage.multiRemove(keys);}catch{}setUser(null);}};
  const t=(key:string)=>((locale==='hi'?hi:en) as Record<string,string>)[key]||(en as Record<string,string>)[key]||key.replaceAll('_',' ');
  return <Context.Provider value={{user,setUser,reload,loading,error,bootstrap,locale,setLocale,t,logout}}>{children}</Context.Provider>;
 }

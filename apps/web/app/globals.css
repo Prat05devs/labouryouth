@@ -4,19 +4,19 @@
 @custom-variant dark (&:is(.dark *));
 
 :root{
-  --radius:.375rem;--header-h:5rem;
-  --background:#f7f8f2;--foreground:#12333d;
-  --card:#ffffff;--card-foreground:#12333d;
-  --popover:#ffffff;--popover-foreground:#12333d;
-  --primary:#134e5e;--primary-foreground:#ffffff;
-  --secondary:#e7eee7;--secondary-foreground:#134e5e;
-  --muted:#eef2ec;--muted-foreground:#4d5f59;
-  --accent:#f3904f;--accent-foreground:#1d1b2e;
-  --destructive:#a32b36;
-  --border:#c9d4cc;--input:#c9d4cc;--ring:#3a6186;
-  --brand-emerald:#134e5e;--brand-sage:#71b280;
-  --brand-steel:#3a6186;--brand-wine:#89253e;
-  --brand-indigo:#3b4371;--brand-orange:#f3904f;
+  /* Owner palette (Decision 20): five greys with one job each, light surfaces, one brass accent. No gradients. */
+  --radius:.5rem;--header-h:5rem;
+  --brand-onyx:#0b0c0c;--brand-carbon:#1c1e20;--brand-gunmetal:#35393c;--brand-charcoal:#555b60;--brand-dimgrey:#646b71;
+  --brand-brass:#c9a15a;--brand-brass-text:#7a5c22;--brand-paper:#f4f4f2;--brand-raised:#ecedec;--brand-line:#dadcdd;
+  --background:var(--brand-paper);--foreground:var(--brand-onyx);
+  --card:#ffffff;--card-foreground:var(--brand-carbon);
+  --popover:#ffffff;--popover-foreground:var(--brand-carbon);
+  --primary:var(--brand-onyx);--primary-foreground:#ffffff;
+  --secondary:var(--brand-raised);--secondary-foreground:var(--brand-carbon);
+  --muted:var(--brand-raised);--muted-foreground:var(--brand-charcoal);
+  --accent:var(--brand-brass);--accent-foreground:var(--brand-onyx);
+  --destructive:#b3261e;
+  --border:var(--brand-line);--input:var(--brand-line);--ring:var(--brand-gunmetal);
 }
 @theme inline{
   --font-sans:'Open Sans','Noto Sans Devanagari','Mukta',system-ui,sans-serif;
@@ -30,16 +30,20 @@
   --color-accent:var(--accent);--color-accent-foreground:var(--accent-foreground);
   --color-destructive:var(--destructive);
   --color-border:var(--border);--color-input:var(--input);--color-ring:var(--ring);
-  --color-emerald-brand:var(--brand-emerald);--color-sage:var(--brand-sage);
-  --color-steel:var(--brand-steel);--color-wine:var(--brand-wine);
-  --color-indigo-brand:var(--brand-indigo);--color-orange-brand:var(--brand-orange);
+  --color-onyx:var(--brand-onyx);--color-carbon:var(--brand-carbon);--color-gunmetal:var(--brand-gunmetal);
+  --color-charcoal:var(--brand-charcoal);--color-dimgrey:var(--brand-dimgrey);
+  --color-brass:var(--brand-brass);--color-brass-text:var(--brand-brass-text);
+  /* Retired gradient-era names kept as aliases so admin screens follow the new palette. */
+  --color-emerald-brand:var(--brand-onyx);--color-sage:var(--brand-brass-text);
+  --color-steel:var(--brand-gunmetal);--color-wine:var(--brand-charcoal);
+  --color-indigo-brand:var(--brand-onyx);--color-orange-brand:var(--brand-brass);
   --radius-sm:calc(var(--radius) - 2px);--radius-md:var(--radius);--radius-lg:calc(var(--radius) + 2px);--radius-xl:calc(var(--radius) + 4px);
 }
 @layer base{
   *{@apply border-border outline-ring/50}
   html{scroll-behavior:smooth}
   body{@apply bg-background text-foreground font-sans antialiased}
-  h1,h2,h3{font-family:var(--font-display);font-weight:400;letter-spacing:.01em;text-transform:uppercase}
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;letter-spacing:.01em;line-height:1.08}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 

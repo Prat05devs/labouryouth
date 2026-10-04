@@ -139,6 +139,9 @@ class Address(Entity, Base):
     latitude: Mapped[str] = mapped_column(String(30))
     longitude: Mapped[str] = mapped_column(String(30))
     point: Mapped[str] = mapped_column(Geography("POINT", srid=4326))
+    maps_url: Mapped[str | None] = mapped_column(String(500))
+    location_precision: Mapped[str] = mapped_column(String(10), default="PIN", server_default="PIN")
+    __table_args__ = (choices("location_precision", "PIN AREA"),)
 
 
 class Locality(Entity, Base):
@@ -160,6 +163,7 @@ class ClientProfile(Entity, Base):
     client_type: Mapped[str] = mapped_column(String(20), default="INDIVIDUAL")
     primary_address_id: Mapped[uuid.UUID | None] = fk("addresses")
     onboarding_complete: Mapped[bool] = mapped_column(Boolean, default=False)
+    whatsapp_number: Mapped[str | None] = mapped_column(String(20))
     __table_args__ = (choices("client_type", "INDIVIDUAL BUSINESS"),)
 
 
@@ -240,6 +244,10 @@ class JobRequest(Entity, Base):
     engagement_type: Mapped[str] = mapped_column(String(20))
     location_snapshot: Mapped[dict] = js()
     point: Mapped[str] = mapped_column(Geography("POINT", srid=4326))
+    # PIN: point read from the hirer's map link. AREA: no pin, point is the service-area centre (Decision 21).
+    location_precision: Mapped[str] = mapped_column(String(10), default="PIN", server_default="PIN")
+    maps_url: Mapped[str | None] = mapped_column(String(500))
+    contact_whatsapp: Mapped[str | None] = mapped_column(String(20))
     start_at: Mapped[datetime] = timecol()
     end_at: Mapped[datetime] = timecol()
     schedule: Mapped[list] = mapped_column(JSONB)
@@ -253,6 +261,7 @@ class JobRequest(Entity, Base):
     submitted_at: Mapped[datetime | None] = timecol()
     __table_args__ = (
         choices("engagement_type", "HOURLY DAILY FIXED_TERM MONTHLY"),
+        choices("location_precision", "PIN AREA"),
         choices(
             "status", "DRAFT SUBMITTED MATCHING OFFERING ASSIGNED ACTIVE COMPLETED CANCELLED EXPIRED ON_HOLD"
         ),
