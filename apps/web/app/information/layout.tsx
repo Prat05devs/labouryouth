@@ -1,3 +1,2 @@
-import {SiteNav} from '@/components/site/nav';
-import {SiteFooter} from '@/components/site/footer';
-export default function InfoLayout({children}:{children:React.ReactNode}){return <div className="min-h-screen"><SiteNav/>{children}<SiteFooter/></div>;}
+import {SitePage} from '@/components/site/blocks';
+export default function InfoLayout({children}:{children:React.ReactNode}){return <SitePage>{children}</SitePage>;}

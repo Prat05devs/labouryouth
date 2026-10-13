@@ -3,14 +3,22 @@ import type { ExpoConfig } from 'expo/config';
 const APP_ID = 'in.labouryouth.app';
 // A release bundle must never ship pointing at a developer machine (Decision 22).
 const apiUrl = process.env.EXPO_PUBLIC_API_URL || '';
-if (process.env.LY_RELEASE === '1' && !apiUrl.startsWith('https://')) {
+const isRelease = process.env.LY_RELEASE === '1';
+if (isRelease && !apiUrl.startsWith('https://')) {
   throw new Error('Release builds need EXPO_PUBLIC_API_URL set to the deployed https API');
 }
 const config: ExpoConfig = {
   name: 'Labour Youth', slug: 'labour-youth', scheme: 'labouryouth', version: '0.1.0',
   orientation: 'default', userInterfaceStyle: 'light',
   ios: { supportsTablet: true, bundleIdentifier: process.env.IOS_BUNDLE_IDENTIFIER || APP_ID,
-    infoPlist: { NSLocationWhenInUseUsageDescription: 'Workers share their location only when going online to see nearby jobs and when checking in at the start of a shift.', ITSAppUsesNonExemptEncryption: false } },
+    infoPlist: {
+      NSLocationWhenInUseUsageDescription: 'Workers share their location only when going online to see nearby jobs and when checking in at the start of a shift.',
+      ITSAppUsesNonExemptEncryption: false,
+      ...(isRelease ? {} : {
+        NSAppTransportSecurity: { NSAllowsArbitraryLoads: true },
+        NSLocalNetworkUsageDescription: 'Allow Labour Youth to connect to the local development service while testing.',
+      }),
+    } },
   android: { package: process.env.ANDROID_PACKAGE || APP_ID, permissions: ['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION'], blockedPermissions: ['ACCESS_BACKGROUND_LOCATION'] },
   plugins: ['@react-native-community/datetimepicker','expo-router','expo-secure-store',['expo-location',{locationWhenInUsePermission:'Workers share their location only when going online to see nearby jobs and when checking in at the start of a shift.'}]],
   extra: process.env.EAS_PROJECT_ID ? {eas:{projectId:process.env.EAS_PROJECT_ID}} : {},

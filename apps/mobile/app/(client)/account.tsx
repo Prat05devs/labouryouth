@@ -1,1 +1,1 @@
-export {default} from '../shared/settings';
+export {AccountScreen as default} from '../../src/AccountScreen';

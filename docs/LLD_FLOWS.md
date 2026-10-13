@@ -1,12 +1,13 @@
 # End-to-end flows and edge cases
 ## Bootstrap and auth
 1. Restore SecureStore refresh session, obtain access token, call `/me`. Network failure shows retry and never treats cached role as authorization.
-2. No session: login/register. Registration validates matching passwords, normalized email/phone, unique constraints; hash password. Choose Hire Staff/Find Work; add CLIENT/WORKER idempotently. Users cannot self-grant admin roles.
+2. No session: public marketplace home (Decisions 18, 24 and 28), with service-filtered open roles and workers. A guest can open a role or worker detail without authentication. The top-right account control offers login or registration at any time. Applying or requesting a worker stores the target action locally, then opens the account gate. After login or registration, the backend adds the required CLIENT or WORKER role idempotently, required onboarding resumes when incomplete, and the app continues the saved action. Registration validates matching passwords, normalized email/phone and unique constraints, then hashes the password. Users cannot self-grant admin roles.
 3. No roles → purpose selection; incomplete profile → resumable onboarding. One role → its app; two → last permitted mode. Logout clears local secrets and revokes server session. Reset consumes one-use hashed token and revokes all sessions. Expired refresh returns to sign-in.
 4. Settings expose language, mode switch, sign-out, password reset and account deletion request with explicit confirmation/reauthentication. Never store passwords or access tokens in analytics.
 
 ## Client
 Short onboarding saves name/type/primary address. Home loads catalog from API plus own active requests; empty state prompts a requirement. Wizard: service → engagement → validated requirements → bounded shift schedule/headcount → owned address or new location → budget/quote → review → create DRAFT → submit. Failure preserves draft. Service inactive or out-of-area is actionable validation, never silently remapped.
+From a public worker profile, Request this worker continues to the authenticated quick-post form with the service and preferred worker preselected. Submission still creates a JobRequest and PENDING JobOffer. Eligibility is checked on the backend, and the worker accepts or declines through the existing offer flow. No public profile action creates an Assignment directly.
 Job detail returns aggregate timeline, offers only as permitted, assigned worker public profile, next shift and replacement/report controls. Address edit cannot change snapshot. Check-in and completion updates are event-driven/pollable. Completed assignments unlock one client review. Cancellation calls explicit action, records actor/reason and pending refund metadata, cancels unused capacity/offers and preserves work/history.
 
 ## Worker onboarding and work

@@ -29,3 +29,43 @@ Purpose: inform the guest-first experience (Decision 18). Figures are the compet
 - https://www.theweek.in/news/biz-tech/2026/05/04/instant-home-services-india.html
 - https://www.peoplematters.in/news/talent-acquisition/quikr-launches-job-search-vertical-quickrjobs-12192
 - https://cxotoday.com/story/top-6-blue-collar-job-recruitment-portals-to-kickstart-your-career-in-2025/
+
+## Apna focused review, 5 October 2026
+
+Reviewed public page content, not logged-in behavior or animation performance. No Labour Youth product behavior changed.
+
+- [Homepage](https://www.apna.co/): search-led introduction, common job-search shortcuts, employer logos/testimonials, and app promotion with QR/store routes. Employer and candidate entry points are separate.
+- [Job listings](https://apna.co/jobs): salary, work mode, work type, shift and posting-date filters make comparison concrete before registration.
+- [Employer site](https://employer.apna.co/): a dedicated recruiting proposition and mobile-number entry rather than an equal-sized competing hero action.
+
+Recommended for Labour Youth: retain the owner-requested animated imagery, compact app CTA and badge-free presentation. Make the hero description more explicit about local jobs and hiring; show genuine app screens and supported benefits near the CTA; place database-driven service discovery and the operating steps before broad market statistics. Desktop QR entry should wait for a confirmed publicly reachable app landing URL. A public web search/application product would be a separate scope decision, not a visual change.
+
+Apna's displayed rankings, user totals, employer logos and testimonials are its claims, not evidence about Labour Youth. No recommendation to reproduce them. No claim is made about conversion rates or runtime animation quality from this content review.
+
+## Snabbit and Apna page architecture review, 5 October 2026
+
+Read the public homepage and linked About, FAQ and policy pages on Snabbit, alongside Apna's homepage, employer site, Dehradun jobs and part-time jobs pages. This is a content and navigation review, not a logged-in booking test or animation/performance audit. The older price and trust notes above are historical competitor claims, not product requirements.
+
+### Observed page roles
+
+- Snabbit homepage (https://www.snabbit.com/): focused app handoff, service choices, illustrated booking steps, coverage, trust content, testimonials and short FAQ linking to a full help centre. Service and city sections on this inspected page do not establish separate service/city landing pages.
+- About (https://www.snabbit.com/about): company proposition, operating approach, promise, trust explanations and named team. Company careers links out to LinkedIn; it is distinct from worker onboarding.
+- Help centre (https://www.snabbit.com/faq): topic navigation for booking, payment, safety, cancellation, general questions and cooking. Answers cover preparation, inclusions/exclusions, availability, account management and support.
+- Policy pages: separate terms (https://www.snabbit.com/legal/terms-and-conditions), privacy (https://www.snabbit.com/legal/privacy-policy), refund/cancellation (https://www.snabbit.com/legal/refund-and-cancellation). These are competitor-specific policies, not templates for Labour Youth commitments.
+- Apna homepage (https://www.apna.co/): job-search entry, popular searches and links organized by location, role and department, plus app handoff.
+- Apna employer site (https://employer.apna.co/): hiring-specific benefits and entry, product explanations, enterprise/pricing links. It separates employer questions from candidate discovery.
+- Apna Dehradun page (https://www.apna.co/jobs/jobs-in-dehradun): actual listings and salary, date, mode, type and shift filters. Part-time page (https://www.apna.co/jobs/part_time-jobs) gives a separate intent-based destination. These are functional search pages, not just marketing copy.
+
+### Proposed Labour Youth structure (implemented 5 October 2026, Decision 26)
+
+1. Keep Home focused: animated introduction, app preview, concise services, short operating steps, brief FAQ and app CTA. Move long history and market context into the existing About destination.
+2. Add For workers: browse before joining, listing pay/schedule, service selection, verification steps and what happens after interest and selection. Use real screens and the existing app route.
+3. Add For hirers: posting requirements, stated wage/location, reviewing interest, offers and contact disclosure timing. Keep hiring actions inside the app.
+4. Add a Services overview using database categories. Service detail pages should wait for accurate category-specific content; they need relevant imagery, example tasks, questions and app handoff, not duplicate filler.
+5. Expand existing /information/support into a topic-organized Help Centre for getting started, hiring, finding work, verification, contact privacy and account management. Link relevant answers from audience pages.
+6. Improve existing /information/about with the documented 2023 origin and Dehradun focus. Team names, portraits and results need genuine owner-provided material.
+7. Keep existing privacy, terms, worker policy, contact and deletion routes. Do not introduce refund promises or cancellation fees from competitor text.
+
+Suggested main navigation: Services, For workers, For hirers, Our story, Help, and compact Open the app. Use actual routes for deeper information and keep only short summaries on Home. Existing legal/help pages should be improved rather than duplicated under competing URLs.
+
+This proposal preserves the owner's Indian imagery, motion, badge-free presentation and app-focused conversion. City pages require real supported coverage; public searchable listings, pricing products, OTP, instant arrival, refunds and automated recruitment would require separate scope decisions. No claims about conversion improvements have been measured. This research update does not authorize or implement those product features.

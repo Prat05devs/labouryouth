@@ -199,6 +199,7 @@ class ReviewInput(Schema):
 class QuickJobInput(Schema):
     service_id: UUID
     service_area_id: UUID
+    preferred_worker_id: UUID | None = None
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)
     maps_url: str | None = Field(default=None, max_length=500)

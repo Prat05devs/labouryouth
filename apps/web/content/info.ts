@@ -1,15 +1,11 @@
 export type Section={h:string;p?:string[];list?:string[]};
 export type InfoPage={slug:string;title:string;summary:string;sections:Section[];pending?:string[];legal?:boolean};
 
-/* Content describes what the product does today (see docs/PRODUCT_SCOPE.md). Legal commitments (
+/* The About and Support pages moved to /our-story and /help (redirects in next.config.ts).
+   Content describes what the product does today (see docs/PRODUCT_SCOPE.md). Legal commitments (
    retention periods, company identity, grievance contact, governing law) are NOT invented here:
    they are listed under `pending` until the owner supplies reviewed text. */
 export const infoPages:InfoPage[]=[
-  {slug:'about',title:'About Labour Youth',summary:'Local staffing, coordinated by a real team. We are starting in Dehradun.',sections:[
-    {h:'What we do',p:['Labour Youth helps households find verified local workers, and helps workers find fair, nearby work. Our operations team reviews worker profiles, matches requirements to suitable workers and follows each job through to completion.']},
-    {h:'Services',p:['We start with House Maid, Driver, Security Guard, Babysitter, Patient Care, Event Staff and other local roles. The live list is always shown on the home page.']},
-    {h:'How the app works',list:['Households describe a requirement: service, schedule, location and headcount.','Workers build a profile, submit documents for review and choose when they are available.','Our team matches, sends offers and coordinates arrival, attendance and completion.','Payment is arranged directly (pay later, cash or UPI) and recorded by our team. The app does not process card payments.']},
-    {h:'Where we operate',p:['Dehradun, Uttarakhand, India. More areas will be added later.']}]},
   {slug:'privacy',title:'Privacy',legal:true,summary:'What information the Labour Youth app handles, and why.',sections:[
     {h:'Information you give us',list:['Account: full name, email address and mobile number, and your password (stored only as a one-way hash).','Households: your primary location and the details of each requirement you create.','Workers: profile details, services, experience, languages, preferred areas and availability, plus a photo, identity and police-verification documents you choose to upload.','Reviews and support messages you send.']},
     {h:'Location',p:['The app asks for your location while it is open and only for specific steps: choosing a service location, going online as a worker, and checking in to a shift. We compare a check-in against the job location to confirm arrival. The app does not track your location in the background.']},
@@ -29,21 +25,11 @@ export const infoPages:InfoPage[]=[
     {h:'Earnings',p:['Completed shifts create earning entries that you can see in the Earnings tab. Entries are never edited silently; corrections appear as new entries.']},
     {h:'Replacements and incidents',p:['If plans change, the household or our team can request a replacement. Report any incident through the app so our team can follow up.']}],
     pending:['Eligibility and required document list as approved by the owner','Conduct rules, suspension and appeal process','Payout timing and any deductions','Effective date']},
-  {slug:'support',title:'Support',summary:'Help with your account, work or the app.',sections:[]},
   {slug:'contact',title:'Contact',summary:'How to reach the Labour Youth team.',sections:[]},
   {slug:'delete-account',title:'Delete your account',summary:'How to ask us to delete your Labour Youth account and data.',sections:[
     {h:'In the app',list:['Open Labour Youth and sign in.','Go to Account (Settings).','Tap “Delete account”, enter your password and confirm “Request deletion”.']},
     {h:'What happens next',p:['Your request signs you out immediately. Our team resolves any active work and then deletes or anonymises your data, keeping only records we are required to keep.']},
-    {h:'Cannot sign in?',p:['Contact support from the Support page and include the email address on your account. We will verify it is you before acting.']}],
+    {h:'Cannot sign in?',p:['Contact us from the Help Centre and include the email address on your account. We will verify it is you before acting.']}],
     pending:['Exact retention period for records kept after deletion','Target time to complete a deletion request']},
 ];
-export const faq=[
-  ['How do I hire someone?','Open the app, choose “Hire staff”, pick a service and tell us the schedule and location. Our team matches a verified worker and keeps you updated.'],
-  ['How do I find work?','Choose “Find work”, complete your profile and upload your documents. Once verified, set yourself online to receive offers.'],
-  ['Why is my profile under review?','Our team checks each worker’s documents by hand before any work starts. You will see progress in the app, and a reason if something needs fixing.'],
-  ['The app asks for my location. Why?','Only to choose a service area and to check in to a shift. We do not track you in the background.'],
-  ['Can I use the app in Hindi?','Yes. Open Account and switch between English and हिन्दी.'],
-  ['I forgot my password.','Use “Forgot password?” on the sign-in screen to get a reset link by email.'],
-  ['How is payment handled?','Payment is arranged for each job (pay later, cash or UPI) and recorded by our team. The app does not take card payments.'],
-] as const;
 export const bySlug=(s:string)=>infoPages.find(p=>p.slug===s);

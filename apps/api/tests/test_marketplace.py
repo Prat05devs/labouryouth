@@ -113,6 +113,17 @@ async def test_selection_creates_offer_worker_accepts_and_capacity_holds(system)
     assert await feed(c, u2) == []  # full jobs leave the feed
 
 
+async def test_client_can_request_a_publicly_listed_worker_after_login(system):
+    c, f, ids = system
+    client, admin, _ = await bootstrap(c, f, ids)
+    worker_user, worker_profile, _ = await worker(c, ids, admin, 3)
+    requested = await quick(c, ids, client, preferred_worker_id=worker_profile["id"])
+    assert requested["status"] == "OFFERING"
+    assert requested["preferred_offer_id"]
+    offers = await call(c, "/offers", u=worker_user, method="GET")
+    assert any(item["id"] == requested["preferred_offer_id"] for item in offers["items"])
+
+
 async def test_concurrent_selection_never_overfills(system):
     c, f, ids = system
     client, admin, _ = await bootstrap(c, f, ids)
@@ -150,12 +161,18 @@ async def test_guest_browse_is_public_read_only_and_leaks_nothing(system):
     assert r.status_code == 200
     items = r.json()["items"]
     assert len(items) == 1 and items[0]["wage_paise"] == 90000 and items[0]["locality"] == "Patel Nagar"
+    assert items[0]["id"] == j["id"] and items[0]["service_id"] == ids["service"]
     blob = r.text
-    for secret in (j["id"], "9876543210", "latitude", "client_id", "point"):
+    for secret in ("9876543210", "latitude", "client_id", "point", "maps_url", "contact_whatsapp"):
         assert secret not in blob
+    detail = await c.get(f"/api/v1/public/jobs/{j['id']}")
+    assert detail.status_code == 200 and detail.json()["headcount"] == 1
     people = (await c.get("/api/v1/public/workers")).json()["items"]
     assert len(people) == 1 and people[0]["first_name"] == "Worker"
-    assert not {"id", "user_id", "email", "phone_number", "full_name"} & set(people[0])
+    assert people[0]["id"] == w["id"] and people[0]["languages"] == ["hi"]
+    assert not {"user_id", "email", "phone_number", "full_name", "photo_document_id"} & set(people[0])
+    person = await c.get(f"/api/v1/public/workers/{w['id']}")
+    assert person.status_code == 200 and person.json()["verified"] is True
     assert (await c.post("/api/v1/public/jobs", json={})).status_code == 405
     assert (await c.get(f"/api/v1/public/jobs?service_id={ids['service']}")).json()["items"]
 

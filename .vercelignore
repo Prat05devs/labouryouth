@@ -1,0 +1,14 @@
+# Upload only what the website build needs (Vercel project root directory: apps/web).
+/*
+!/package.json
+!/package-lock.json
+!/apps
+/apps/*
+!/apps/web
+/apps/web/.next
+/apps/web/node_modules
+/apps/web/.vercel
+/apps/web/tsconfig.tsbuildinfo
+# Never upload secrets.
+.env
+.env.*

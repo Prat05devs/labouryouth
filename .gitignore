@@ -14,3 +14,4 @@ __pycache__/
 *.tsbuildinfo
 private-uploads/
 .DS_Store
+.vercel

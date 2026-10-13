@@ -4,20 +4,38 @@
 @custom-variant dark (&:is(.dark *));
 
 :root{
-  /* Owner palette (Decision 20): five greys with one job each, light surfaces, one brass accent. No gradients. */
-  --radius:.5rem;--header-h:5rem;
-  --brand-onyx:#0b0c0c;--brand-carbon:#1c1e20;--brand-gunmetal:#35393c;--brand-charcoal:#555b60;--brand-dimgrey:#646b71;
-  --brand-brass:#c9a15a;--brand-brass-text:#7a5c22;--brand-paper:#f4f4f2;--brand-raised:#ecedec;--brand-line:#dadcdd;
+  /* Vibrant public palette (Decision 26): trust, care and courage hues over warm light surfaces.
+     Each hue has a fill (buttons, chips), an ink (text and icons, at least 4.5:1 on white and on its soft tint)
+     and a soft tint (section bands, icon wells). Greys from Decision 20 still carry text. */
+  --radius:.75rem;--header-h:4.5rem;
+  --brand-onyx:#0b0c0c;--brand-carbon:#1c1e20;--brand-gunmetal:#35393c;--brand-charcoal:#4f565c;--brand-dimgrey:#5f666d;
+  --brand-paper:#fbfaf7;--brand-raised:#f1f0ec;--brand-line:#e3e1db;
+  --trust:#1f4fd1;--trust-ink:#1a3e9e;--trust-deep:#122a6b;--trust-soft:#eaf0ff;--trust-mid:#c7d6ff;
+  --care:#0b7a6e;--care-ink:#08635a;--care-soft:#e2f5f0;--care-mid:#a6e2d4;
+  --courage:#f08a24;--courage-ink:#9c4708;--courage-soft:#fff0e0;--courage-mid:#ffd2a3;
+  --warmth:#d23c6e;--warmth-ink:#a42451;--warmth-soft:#fde9ef;--warmth-mid:#f7bccf;
+  --sun:#f6be3b;--sun-ink:#76560f;--sun-soft:#fff6da;
+  --calm:#6a4bd6;--calm-ink:#5034ad;--calm-soft:#f0ebff;--calm-mid:#d5c9fb;
+  /* Legacy names used by the admin console and older pages. */
+  --brand-brass:var(--sun);--brand-brass-text:var(--courage-ink);
   --background:var(--brand-paper);--foreground:var(--brand-onyx);
   --card:#ffffff;--card-foreground:var(--brand-carbon);
   --popover:#ffffff;--popover-foreground:var(--brand-carbon);
-  --primary:var(--brand-onyx);--primary-foreground:#ffffff;
+  --primary:var(--trust);--primary-foreground:#ffffff;
   --secondary:var(--brand-raised);--secondary-foreground:var(--brand-carbon);
   --muted:var(--brand-raised);--muted-foreground:var(--brand-charcoal);
-  --accent:var(--brand-brass);--accent-foreground:var(--brand-onyx);
+  --accent:var(--trust-soft);--accent-foreground:var(--trust-ink);
   --destructive:#b3261e;
-  --border:var(--brand-line);--input:var(--brand-line);--ring:var(--brand-gunmetal);
+  --border:var(--brand-line);--input:#d4d2cb;--ring:var(--trust);
+  /* Fluid layout scale. Gutter and section rhythm grow continuously with the viewport instead of jumping at breakpoints. */
+  --gutter:clamp(1rem,.55rem + 2.4vw,3.5rem);
+  --shell:76rem;
+  --section-y:clamp(3.5rem,2.2rem + 5.5vw,8rem);
 }
+/* Wide desktops get a wider reading frame; very large displays also scale rem-based type and spacing. */
+@media(min-width:1600px){:root{--shell:84rem}}
+@media(min-width:2000px){:root{--shell:92rem}html{font-size:106.25%}}
+@media(min-width:2400px){html{font-size:115%}}
 @theme inline{
   --font-sans:'Open Sans','Noto Sans Devanagari','Mukta',system-ui,sans-serif;
   --font-display:'Anton','Noto Sans Devanagari','Mukta',Impact,sans-serif;
@@ -33,6 +51,13 @@
   --color-onyx:var(--brand-onyx);--color-carbon:var(--brand-carbon);--color-gunmetal:var(--brand-gunmetal);
   --color-charcoal:var(--brand-charcoal);--color-dimgrey:var(--brand-dimgrey);
   --color-brass:var(--brand-brass);--color-brass-text:var(--brand-brass-text);
+  --color-trust:var(--trust);--color-trust-ink:var(--trust-ink);--color-trust-deep:var(--trust-deep);--color-trust-soft:var(--trust-soft);--color-trust-mid:var(--trust-mid);
+  --color-care:var(--care);--color-care-ink:var(--care-ink);--color-care-soft:var(--care-soft);--color-care-mid:var(--care-mid);
+  --color-courage:var(--courage);--color-courage-ink:var(--courage-ink);--color-courage-soft:var(--courage-soft);--color-courage-mid:var(--courage-mid);
+  --color-warmth:var(--warmth);--color-warmth-ink:var(--warmth-ink);--color-warmth-soft:var(--warmth-soft);--color-warmth-mid:var(--warmth-mid);
+  --color-sun:var(--sun);--color-sun-ink:var(--sun-ink);--color-sun-soft:var(--sun-soft);
+  --color-calm:var(--calm);--color-calm-ink:var(--calm-ink);--color-calm-soft:var(--calm-soft);--color-calm-mid:var(--calm-mid);
+  --color-paper:var(--brand-paper);--color-raised:var(--brand-raised);
   /* Retired gradient-era names kept as aliases so admin screens follow the new palette. */
   --color-emerald-brand:var(--brand-onyx);--color-sage:var(--brand-brass-text);
   --color-steel:var(--brand-gunmetal);--color-wine:var(--brand-charcoal);
@@ -46,5 +71,19 @@
   h1,h2,h3{font-family:var(--font-display);font-weight:400;letter-spacing:.01em;line-height:1.08}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media(min-width:1024px){:root{--header-h:5rem}}
 
-@media(min-width:768px){:root{--header-h:7rem}}
+/* Layout primitives. `shell` is the page frame; safe-area insets keep content clear of notches in landscape. */
+@utility shell{width:min(100% - 2*max(var(--gutter),env(safe-area-inset-left),env(safe-area-inset-right)),var(--shell));margin-inline:auto}
+@utility section-y{padding-block:var(--section-y)}
+/* Intrinsic grid: as many columns as fit at --min wide, so cards reflow by available space, not by device class. */
+@utility grid-fit{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--min,16rem)),1fr))}
+@utility grid-fill{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,var(--min,14rem)),1fr))}
+/* Fluid type: each step interpolates between a phone size and a desktop size. */
+@utility t-display{font-size:clamp(2.75rem,1.9rem + 4.2vw,6rem);line-height:1.02;letter-spacing:-.015em}
+@utility t-h1{font-size:clamp(2.4rem,1.75rem + 3.2vw,4.75rem);line-height:1.04;letter-spacing:-.01em}
+@utility t-h2{font-size:clamp(2rem,1.5rem + 2.4vw,3.75rem);line-height:1.06}
+@utility t-h3{font-size:clamp(1.4rem,1.15rem + 1vw,2.1rem);line-height:1.12}
+@utility t-lead{font-size:clamp(1.05rem,.98rem + .35vw,1.3rem);line-height:1.65}
+@utility text-pretty{text-wrap:pretty}
+@layer base{h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}}

@@ -1,0 +1,10 @@
+.venv
+__pycache__
+**/__pycache__
+private-uploads
+tests
+scripts
+.env
+*.pyc
+.pytest_cache
+.ruff_cache

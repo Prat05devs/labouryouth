@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {Apple,Smartphone} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Card,CardContent,CardDescription,CardHeader,CardTitle} from '@/components/ui/card';
-import {Logo} from '@/components/site/nav';
+import {Logo} from '@/components/site/logo';
 export const dynamic='force-dynamic';
 export const metadata={title:'Get the app | Labour Youth'};
 export default function Download(){

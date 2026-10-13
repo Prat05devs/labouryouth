@@ -120,6 +120,21 @@ async def quick_job(data: QuickJobInput, request: Request, db: DB, user: Actor):
     db.add(job)
     await db.flush()
     await emit(db, "JobSubmitted", job.id, [user.id], f"/shared/job/{job.id}")
+    if data.preferred_worker_id:
+        worker = await get(db, WorkerProfile, data.preferred_worker_id, True)
+        await MatchingService.eligibility(db, job, worker, amount=job.budget_max)
+        offer = JobOffer(
+            job_id=job.id,
+            worker_id=worker.id,
+            expires_at=min(now() + timedelta(hours=4), job.end_at),
+            agreed_worker_amount_paise=job.budget_max,
+        )
+        db.add(offer)
+        await db.flush()
+        job.status = "OFFERING"
+        await emit(db, "OfferCreated", offer.id, [worker.user_id], "/worker/offers")
+        audit(db, user, "job.quick_post_preferred", job.id, request.state.request_id)
+        return {**public(job), "notified_workers": 1, "preferred_offer_id": str(offer.id)}
     matches = await MatchingService.generate(db, job)
     workers = list(
         await db.scalars(

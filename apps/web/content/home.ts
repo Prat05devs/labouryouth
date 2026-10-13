@@ -25,9 +25,29 @@ export const journey = [
   {year: '2026', title: 'The Labour Youth app', body: 'We built the app to make hiring and finding work easier: wages shown up front, workers verified by our team, and direct WhatsApp contact once you choose. Dehradun first.'},
 ] as const;
 
-export type Story = {name: string; role: 'Hirer' | 'Worker'; place: string; quote: string; consent: true};
-// Add real stories only, with the person's written consent. The section stays hidden while this is empty.
+export type Story = {name: string; role: 'Hirer' | 'Worker'; place: string; quote: string; work?: string; consent: true};
+// Add real stories only, with the person's written consent (the Labour Youth team is collecting them from
+// people they have already placed). While this is empty the site shows labelled example jobs, never invented quotes.
 export const stories: Story[] = [];
+
+// The work the Labour Youth team arranges most often, as stated by the owner (5 October 2026).
+// Photos are illustrations; tiles without a suitable licensed photo use an icon.
+export type PopularJob = {key: string; title: string; hindi: string; line: string; tone: 'trust' | 'care' | 'courage' | 'warmth' | 'sun' | 'calm'; photo?: {src: string; alt: string}};
+export const popularJobs: PopularJob[] = [
+  {key: 'house-help', title: 'House help', hindi: 'घरेलू सहायक', line: 'Cleaning, dusting and kitchen help, for a day or every month.', tone: 'warmth', photo: {src: '/img/home.jpg', alt: 'Stock photo of a woman dusting carved wooden furniture on a veranda.'}},
+  {key: 'baby-care', title: 'Baby care and babysitting', hindi: 'बच्चों की देखभाल', line: 'A caring hand for your child, for an evening or a regular schedule.', tone: 'care', photo: {src: '/img/family.jpg', alt: 'Stock photo of a woman sitting with a young boy at a low table.'}},
+  {key: 'plumber', title: 'Plumbers', hindi: 'प्लंबर', line: 'Leaks, fittings and new lines, fixed on the day you need.', tone: 'trust'},
+  {key: 'electrician', title: 'Electricians', hindi: 'इलेक्ट्रीशियन', line: 'Wiring, boards and repairs for homes and shops.', tone: 'sun', photo: {src: '/img/electrician.jpg', alt: 'Stock photo of an electrician working on a distribution board.'}},
+  {key: 'carpenter', title: 'Carpenters', hindi: 'बढ़ई', line: 'Doors, frames, furniture and fittings.', tone: 'courage', photo: {src: '/img/work-craft.webp', alt: 'AI-generated scene of two Indian carpenters measuring a timber frame.'}},
+  {key: 'driver', title: 'Drivers for a day or one trip', hindi: 'एक दिन या एक सफ़र के लिए ड्राइवर', line: 'Someone to drive your car for a day out, a wedding or a single journey.', tone: 'calm'},
+];
+
+// Labelled examples of the kind of work people post. They are not testimonials and name no one.
+export const exampleJobs = [
+  {who: 'Hirer', title: 'A babysitter for a wedding evening', body: 'A family needs someone to look after two children from 6 pm to 11 pm while they attend a function nearby.', tone: 'care'},
+  {who: 'Hirer', title: 'A plumber for one leaking line', body: 'A shop owner posts one plumber for tomorrow at 10 am, for about three hours, with the daily wage stated.', tone: 'trust'},
+  {who: 'Hirer', title: 'A driver for a single trip', body: 'A family needs their own car driven for one return journey, out in the morning and back by evening.', tone: 'calm'},
+] as const;
 
 export const registration = {
   everyone: ['Full name', 'Email address', 'Mobile number', 'Password (12 or more characters, with a live counter)'],

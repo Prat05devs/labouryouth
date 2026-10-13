@@ -1,2 +1,14 @@
-import {Tabs,Redirect} from 'expo-router';import {useSession} from '../../src/session';import {colors} from '../../src/ui';
-export default function Layout(){const {user,t}=useSession();if(!user||!user.roles.includes('WORKER'))return <Redirect href="/"/>;return <Tabs screenOptions={{headerTitle:'Labour Youth',headerStyle:{backgroundColor:colors.paper},headerShadowVisible:false,headerTintColor:colors.ink,tabBarActiveTintColor:colors.ink,tabBarInactiveTintColor:colors.quiet,tabBarStyle:{backgroundColor:colors.white,borderTopColor:colors.line}}}><Tabs.Screen name="index" options={{title:t('home')}}/><Tabs.Screen name="jobs" options={{title:t('jobsTab')}}/><Tabs.Screen name="offers" options={{title:t('offers')}}/><Tabs.Screen name="earnings" options={{title:t('earnings')}}/><Tabs.Screen name="account" options={{title:t('account')}}/></Tabs>;}
+import {Tabs,Redirect} from 'expo-router';
+import {useSession} from '../../src/session';
+import {tabIcon,tabOptions} from '../../src/tabs';
+
+export default function Layout(){
+ const {user,t}=useSession();if(!user||!user.roles.includes('WORKER'))return <Redirect href="/"/>;
+ return <Tabs screenOptions={tabOptions}>
+  <Tabs.Screen name="index" options={{title:t('home'),tabBarIcon:tabIcon('home')}}/>
+  <Tabs.Screen name="jobs" options={{title:t('findWorkTab'),tabBarIcon:tabIcon('search')}}/>
+  <Tabs.Screen name="offers" options={{title:t('offers'),tabBarIcon:tabIcon('mail')}}/>
+  <Tabs.Screen name="earnings" options={{title:t('earnings'),tabBarIcon:tabIcon('wallet')}}/>
+  <Tabs.Screen name="account" options={{title:t('accountTab'),tabBarIcon:tabIcon('person-circle')}}/>
+ </Tabs>;
+}
