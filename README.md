@@ -6,20 +6,22 @@ Start with [Product scope](docs/PRODUCT_SCOPE.md), [build checklist](docs/PHASE1
 
 ## Repository
 - `apps/mobile`: React Native + Expo Router, Client/Worker modes, en/hi.
-- `apps/api`: FastAPI, SQLAlchemy, Alembic, domain services, PostgreSQL/PostGIS.
+- `apps/server`: the API. Node.js/Express (TypeScript) modular monolith, SQL migrations, integration tests on PostgreSQL/PostGIS (Decision 31). Hosted on Hostinger Cloud with Supabase; see [hosting](docs/API_HOSTING.md).
+- `apps/api`: the retired FastAPI backend. Every route and test now exists in `apps/server`; the folder is kept only until the owner approves deleting it, and nothing runs it.
 - `apps/web`: Next.js marketing landing and protected operations dashboard.
 - `packages/contracts`: generated OpenAPI contract; no duplicated business rules.
 
 ## Local setup and commands (target interface)
-Node 24 LTS, Python 3.12+, Docker with Compose. Copy `.env.example` to `.env`, generate local secrets and set database credentials. Never commit `.env`. Install pinned dependencies using the committed lockfiles when available.
+Node 24 LTS (`nvm use 24`), Docker with Compose. Copy `.env.example` to `.env`, generate local secrets and set database credentials. Never commit `.env`. Install pinned dependencies using the committed lockfiles when available.
 
 ```sh
 docker compose up -d db
-cd apps/api
-uv sync
-uv run alembic upgrade head
-uv run python -m app.seed
-uv run uvicorn app.main:app --reload --port 8000
+cd apps/server
+npm ci
+npm run migrate          # applies migrations/*.sql
+npm run seed             # Dehradun area, services, localities
+npm run dev              # API on http://localhost:8000
+npm run bootstrap-admin  # first operations admin, interactive
 ```
 
 From repository root, separate terminals:
@@ -29,9 +31,9 @@ npm run dev:web
 npm run dev:mobile
 npm run build:web
 npm run typecheck
-cd apps/api && uv run pytest
+npm run test:server      # needs the Docker database; never SQLite
 ```
-These are the intended interface; consult implementation status before assuming a command or capability exists. API `/api/v1`, OpenAPI `/openapi.json`, development docs `/docs`. A physical phone needs a reachable LAN/HTTPS API URL, not its own localhost. Local Docker credentials are development-only.
+These are the intended interface; consult implementation status before assuming a command or capability exists. API base path `/api/v1`; the contract is [API_CONTRACT.md](docs/API_CONTRACT.md). A physical phone needs a reachable LAN/HTTPS API URL, not its own localhost. Local Docker credentials are development-only.
 
 ## Configuration
 `.env.example` is the configuration inventory: DB, JWT/session/reset settings, allowed web origins, private storage, email, location/time limits, smart links and EAS identifiers. Only `EXPO_PUBLIC_*` and explicitly public web config enter client bundles. All timestamps are UTC; UI uses local display. All amounts are integer paise (INR initially).

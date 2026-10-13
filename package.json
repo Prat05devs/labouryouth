@@ -8,6 +8,8 @@
   "scripts": {
     "dev:mobile": "npm run start -w apps/mobile",
     "dev:web": "npm run dev -w apps/web",
+    "dev:server": "npm --prefix apps/server run dev",
+    "test:server": "npm --prefix apps/server test",
     "build:web": "npm run build -w apps/web",
     "typecheck": "npm run typecheck --workspaces",
     "lint:dash": "node scripts/check-no-emdash.mjs"

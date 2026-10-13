@@ -1,8 +1,10 @@
 # Architecture
+Decision 31 (12 October 2026): the API is ported from FastAPI to Node.js/Express (TypeScript) in `apps/server` (complete 13 October 2026) so it can run on Hostinger Cloud hosting, with the database on Supabase PostgreSQL/PostGIS and private documents in a private Supabase Storage bucket, streamed by the API to authorized users only. Everything below still applies; where it names FastAPI, SQLAlchemy or Alembic, the Express server uses Express routers, `pg` with SQL, and SQL migration files.
+
 ## Platform and ownership
 ```mermaid
 flowchart LR
- M[Expo Client / Worker app] --> A[FastAPI /api/v1]
+ M[Expo Client / Worker app] --> A[Express API /api/v1]
  W[Next.js protected admin / server session] --> A
  L[Next.js landing /app smart link] --> M
  A --> D[(PostgreSQL + PostGIS)]
