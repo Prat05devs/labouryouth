@@ -119,6 +119,7 @@ If the phone is also limited, every visitor shares one address: tell the develop
 2. Environment variables:
    ```
    API_ORIGIN=https://api.<your-domain>
+   WEB_ORIGIN=https://<your-domain>,https://www.<your-domain>
    WEB_SESSION_SECRET=<Step 4>
    SUPPORT_EMAIL=<real support address, when decided>
    INSTAGRAM_URL=https://www.instagram.com/labour.youth/

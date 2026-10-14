@@ -32,7 +32,7 @@ async function place(tx: Tx, data: z.output<typeof AddressInput>) {
   const area = await tx.one('SELECT * FROM service_areas WHERE city_id = $1 AND active LIMIT 1', [data.city_id]);
   require(area, 'OUTSIDE_SERVICE_AREA', 422);
   const pin = await pinFor(tx, area, data.maps_url, data.latitude, data.longitude, false);
-  return [data.city_id, data.label, data.line1, data.locality, data.state, data.postal_code, data.maps_url, pin.latitude, pin.longitude, pin.point, pin.precision];
+  return [data.city_id, data.label, data.line1, data.locality, data.state, data.postal_code, pin.mapsUrl, pin.latitude, pin.longitude, pin.point, pin.precision];
 }
 
 route(router, 'post', '/addresses', {status: 201, body: AddressInput, auth: true}, async ({tx, user}, data) => {

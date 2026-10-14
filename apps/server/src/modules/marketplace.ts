@@ -59,7 +59,7 @@ route(router, 'post', '/jobs/quick', {status: 201, body: QuickJobInput, auth: tr
     `INSERT INTO addresses (id, owner_id, city_id, label, line1, locality, state, postal_code, latitude, longitude, point, maps_url, location_precision)
      VALUES ($1, $2, $3, $4, $5, $6, $7, '', $8, $9, ST_GeogFromText($10), $11, $12) RETURNING *`,
     [randomUUID(), user.id, city.id, data.locality || 'Job site', data.locality || 'Pinned location', data.locality, city.state,
-      pin.latitude, pin.longitude, pin.point, data.maps_url, pin.precision],
+      pin.latitude, pin.longitude, pin.point, pin.mapsUrl, pin.precision],
   );
   const endAt = new Date(data.start_at.getTime() + data.hours * 3_600_000);
   let job = (await tx.one(
@@ -67,7 +67,7 @@ route(router, 'post', '/jobs/quick', {status: 201, body: QuickJobInput, auth: tr
        contact_whatsapp, start_at, end_at, schedule, recurring_metadata, headcount, budget_min, budget_max, currency, notes, status, submitted_at)
      VALUES ($1, $2, $3, $4, 'DAILY', $5, ST_GeogFromText($6), $7, $8, $9, $10, $11, $12, '{}', $13, $14, $14, 'INR', $15, 'SUBMITTED', now())
      RETURNING *`,
-    [randomUUID(), user.id, service.id, area.id, publicRow(address!), pin.point, pin.precision, data.maps_url,
+    [randomUUID(), user.id, service.id, area.id, publicRow(address!), pin.point, pin.precision, pin.mapsUrl,
       profile.whatsapp_number || user.phone_number, data.start_at, endAt,
       JSON.stringify([{start_at: data.start_at.toISOString(), end_at: endAt.toISOString()}]), data.headcount, data.wage_per_day_paise, data.notes],
   ))!;

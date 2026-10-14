@@ -7,4 +7,5 @@ export async function writeSession(data:Session){const token=await new EncryptJW
 export async function clearSession(){(await cookies()).delete(name);}
 export const apiOrigin=()=>process.env.API_ORIGIN||'http://localhost:8000';
 export async function identity(session:Session){const r=await fetch(apiOrigin()+'/api/v1/me',{headers:{Authorization:'Bearer '+session.access_token},cache:'no-store'});if(!r.ok)return null;return r.json();}
-export function checkOrigin(req:Request){const origin=req.headers.get('origin');return origin===new URL(req.url).origin;}
+// Behind a hosting proxy req.url can say http:// while the browser sends https://, so the public origin is configured.
+export function checkOrigin(req:Request){const origin=req.headers.get('origin');if(!origin)return false;const allowed=(process.env.WEB_ORIGIN||'').split(',').map(o=>o.trim()).filter(Boolean);return allowed.length?allowed.includes(origin):origin===new URL(req.url).origin;}

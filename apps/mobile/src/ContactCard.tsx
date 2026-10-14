@@ -2,7 +2,8 @@ import {useCallback,useState} from 'react';import {Linking,Text,View} from 'reac
 // Hirer contact for a worker the hirer has selected; the API answers 404 until then (Decision 21).
 export function ContactCard({jobId}:{jobId:string}){const {t}=useSession();const [c,setC]=useState<any>(null),[locked,setLocked]=useState(false),[failure,setFailure]=useState('');
  useFocusEffect(useCallback(()=>{api('/jobs/'+jobId+'/contact').then(r=>{setC(r);setLocked(false);}).catch(e=>{if(e instanceof ApiError&&e.code==='NOT_FOUND')setLocked(true);});},[jobId]));
- const open=async(url:string)=>{try{setFailure('');await Linking.openURL(url);}catch{setFailure('UNEXPECTED_ERROR');}};
+ // Only web links and phone calls; a stored link is never allowed to launch another app's scheme or a script URL.
+ const open=async(url:string)=>{try{setFailure('');if(!/^(https:\/\/|tel:)/i.test(url))throw new Error('scheme');await Linking.openURL(url);}catch{setFailure('UNEXPECTED_ERROR');}};
  const box={gap:space.md,padding:space.lg,borderRadius:radius.md,backgroundColor:colors.raised};
  if(locked)return <View style={[box,{flexDirection:'row',alignItems:'center'}]}><IconTile icon="lock-closed-outline" size={34} tone={5}/><Text style={[type.footnote,{flex:1}]}>{t('contactLocked')}</Text></View>;
  if(!c)return null;

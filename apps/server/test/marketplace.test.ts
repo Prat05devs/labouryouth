@@ -210,3 +210,31 @@ describe('marketplace', () => {
     assert.equal((await fetch(s.base + '/api/v1/public/jobs', {headers: {'X-Forwarded-For': '10.7.7.8'}})).status, 200);
   });
 });
+
+describe('map link storage', () => {
+  let s: System;
+  beforeEach(async () => {
+    s = await system();
+  });
+  afterEach(async () => {
+    await s.close();
+  });
+
+  test('only real Google Maps links are kept and passed to a selected worker', async () => {
+    const c = await client(s, 1);
+    const {u} = await worker(s, 3);
+    for (const evil of ['https://evil.example/phish@30.31,78.03', 'javascript:alert(1)//@30.31,78.03', 'intent://x#Intent;scheme=evil;end@30.31,78.03']) {
+      const j = await quick(s, c.u, {maps_url: evil});
+      const {rows} = await s.pool.query('SELECT j.maps_url AS job, a.maps_url AS address FROM job_requests j, addresses a WHERE j.id = $1 AND a.owner_id = j.client_id ORDER BY a.created_at DESC LIMIT 1', [j.id]);
+      assert.deepEqual(rows[0], {job: null, address: null}, evil);
+    }
+    const typed = await quick(s, c.u, {latitude: null, longitude: null, maps_url: '30.3170, 78.0330'});
+    assert.equal(typed.location_precision, 'PIN');
+    // A row saved before this check existed must still never reach the worker.
+    await s.pool.query(`UPDATE job_requests SET maps_url = 'https://evil.example/@30.31,78.03' WHERE id = $1`, [typed.id]);
+    const interest = await call(s, `/jobs/${typed.id}/interest`, {u, status: 201, body: {}});
+    await call(s, `/jobs/${typed.id}/interests/${interest.id}/select`, {u: c.u, status: 201, body: {}});
+    const contact = await call(s, `/jobs/${typed.id}/contact`, {u, method: 'GET'});
+    assert.equal(contact.maps_url, 'https://www.google.com/maps/search/?api=1&query=30.317,78.033');
+  });
+});

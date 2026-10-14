@@ -101,7 +101,11 @@ export async function resolveLink(input: string | null | undefined, fetcher: typ
 /** Python's str(float), so stored latitude/longitude text matches what the FastAPI backend wrote. */
 const pyFloat = (n: number) => (Number.isInteger(n) ? n.toFixed(1) : String(n));
 
-export type Pin = {point: string; lat: number; lng: number; latitude: string; longitude: string; precision: 'PIN' | 'AREA'};
+/** `mapsUrl` is the link to store and later hand to a selected worker: a real Google Maps link, otherwise null. */
+export type Pin = {point: string; lat: number; lng: number; latitude: string; longitude: string; precision: 'PIN' | 'AREA'; mapsUrl: string | null};
+
+/** Only a Google Maps link may be stored or shown; typed coordinates or anything else are never kept as a link. */
+export const safeMapsUrl = (url: string | null | undefined) => (url && isMapsLink(url) ? url.trim() : null);
 
 /**
  * Point for a hirer's place: explicit coordinates, else the map link's pin, else the service-area centre.
@@ -130,14 +134,15 @@ export async function pinFor(
       const ok = await tx.value<boolean>('SELECT ST_DWithin(ST_GeogFromText($1), center, radius_m) FROM service_areas WHERE id = $2', [point, area.id]);
       require(ok, 'OUTSIDE_SERVICE_AREA', 422);
     }
-    return {point, lat, lng, latitude: pyFloat(lat), longitude: pyFloat(lng), precision: 'PIN'};
+    return {point, lat, lng, latitude: pyFloat(lat), longitude: pyFloat(lng), precision: 'PIN', mapsUrl: safeMapsUrl(mapsUrl)};
   }
   const row = await tx.one('SELECT ST_AsEWKT(center) AS point, ST_Y(center::geometry) AS lat, ST_X(center::geometry) AS lng FROM service_areas WHERE id = $1', [area.id]);
-  return {point: row!.point, lat: row!.lat, lng: row!.lng, latitude: pyFloat(row!.lat), longitude: pyFloat(row!.lng), precision: 'AREA'};
+  return {point: row!.point, lat: row!.lat, lng: row!.lng, latitude: pyFloat(row!.lat), longitude: pyFloat(row!.lng), precision: 'AREA', mapsUrl: safeMapsUrl(mapsUrl)};
 }
 
 export function contactLinks(whatsapp: string | null, mapsUrl: string | null, precision: string, lat?: number | string | null, lng?: number | string | null) {
   const digits = (whatsapp ?? '').replace(/\D/g, '');
+  mapsUrl = safeMapsUrl(mapsUrl); // Rows saved before links were checked may hold anything; never pass those on.
   if (!mapsUrl && precision === 'PIN' && lat != null) mapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   return {
     whatsapp,
